@@ -1,0 +1,293 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>News Portal</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="{{ url_for('static', filename='styles/simple-sidebar.css') }}" rel="stylesheet">
+
+</head>
+
+<body>
+
+
+
+
+  <div class="d-flex" id="wrapper">
+
+     <!-- Sidebar -->
+    <div class="bg-light border-right" id="sidebar-wrapper">
+      <div class="sidebar-heading">News Portal</div>
+      <div class="list-group list-group-flush">
+                <a href="/admin/dashboard/{{sec}}/0" class="list-group-item list-group-item-action bg-light">📌 Dashboard</a>
+                <ul class="list-group list-group-item">
+                  {% for i in article_counts %}
+
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <a class="list-group-item-action" href="/admin/dashboard/{{i[0]}}/0">📎 
+                    {{  i[0] }}
+
+                    </a>
+                    {%if i[1] > 0%}
+                    <span class="badge badge-primary badge-pill">
+                      
+                    {{i[1]}}
+                    
+                  </span>
+                  {%endif%}
+        
+                  </li>              
+                  {% endfor %}
+                </ul>
+
+               
+                 
+               
+        <a href="{{ url_for('admin')}}" class="list-group-item list-group-item-action bg-light">📝 Create Article</a>
+      </div>
+    </div>
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+
+      <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <button class="btn btn-primary" id="menu-toggle">Menu</button>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+            <li class="nav-item active">
+              <a class="nav-link" href="/">🏠 Home</a>
+            </li>
+
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                👤 {{FullName}}
+              </a>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/admin/account/all">Profile</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/admin/logout">Logout</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+      <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <!-- <strong>Title</strong> --> {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+     <div class="container-fluid">
+
+      <!-- Page Content -->
+  <div class="container">
+
+    <div class="row">
+
+      <!-- Blog Entries Column -->
+      <div class="col-md-8">
+
+        <h1 class="my-3">
+          📍 Profile
+        </h1>
+        <hr class="thin">
+        <h4 class="my-2"><b>{{user[3]}}</b></h2>
+        <h5 class="my-2">👤 {{user[1]}}</h5>
+        <h6 class="my-2">📝 {{user[4]}} </h6>
+        <button class="btn btn-light my-3" data-toggle="collapse" data-target="#change_password">🔒 Change Password</button>
+        <div id="change_password" class="collapse">
+          <form method="POST">
+          
+             
+             {{ wtf.form_field(form.currentPassword, placeholder="Current Password") }}
+             {{ wtf.form_field(form.newPassword,placeholder="New Password") }}
+             {{ wtf.form_field(form.retypePassword, placeholder="Re-type Password") }}
+             
+             <button class="btn btn-danger" data-toggle="collapse" data-target="#change_password">Cancel</button>
+              <input type="submit" class="btn btn-primary" value="Save">
+
+            </form>
+         
+        </div>
+        <hr>
+        <h4 class="my-2"><b>Your Articles</b>
+        </h4>
+   <div>
+    <div class="row">
+    {% for article in article_list %}
+    <div class="col-md-4 my-1">
+    <div class="card my-2"
+    {% if article[2] == 'DRAFT'%}
+    style="background-color: lightyellow"
+    {% endif %}
+    {% if article[2] == 'PUBLISHED'%}
+    style="background-color: #d7f9d7"
+    {% endif %}
+    >
+      <div class="card-body my-1">🔴 <em>{{article[0]}}</em>
+
+      <div class="text-muted">{{article[1]}}<br><a href="/admin/article/read/{{article[3]}}" class="btn-link">Go to this article</a></div>
+    </div>
+      
+    </div>
+   </div>
+    {% endfor %}
+  </div>
+  <div class="list-group-item-action my-3 text-muted"><center> - - - - Nothing Follows - - - - </center></div>
+              
+            
+      </div>
+          
+
+
+
+    
+
+  </div>
+  <!-- /.container -->
+<div class="col-md-4">
+
+        <!-- Search Widget -->
+        <div class="card my-4">
+          <h5 class="card-header">🔎 Search</h5>
+          <div class="card-body">
+            <div class="input-group">
+              <input type="text" class="form-control" id="txt_search" placeholder="Search for...">
+              <span class="input-group-btn">
+                <button class="btn btn-secondary" type="button" id="btn_search">Go!</button>
+              </span>
+            </div>
+          </div>
+        </div>
+
+  <!-- Categories Widget -->
+        <div class="card my-4">
+          <h5 class="card-header">📁 Categories</h5>
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <ul class="list-unstyled mb-0">
+                  {% for section in sections %}       
+                  <li>
+                    🔷 <a href="/admin/dashboard/{{section}}/0">
+                    {{ section }}
+                    </a>
+                  </li>
+             
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Side Widget -->
+        <div class="card my-4">
+          <h5 class="card-header">📑 Marker</h5>
+          <div class="card-body">
+            
+            <a class="card mb-4" href="/admin/account/draft" style="background-color: lightyellow">
+              <div class="card-body">📄 DRAFT <span class="badge badge-primary badge-pill">
+                      {{numdraft}}
+                  </span></div>
+            </a>
+   
+            <a class="card mb-4" href="/admin/account/published" style="background-color: #d7f9d7">
+              <div class="card-body">📰 PUBLISHED 
+                    <span class="badge badge-primary badge-pill">
+                      {{numpub}}
+                  </span>
+                  </div>
+            </a>
+
+          </div>
+        </div>
+
+
+      </div>
+
+      </div>
+    </div>
+    <!-- /#page-content-wrapper -->
+
+  </div>
+  <!-- /#wrapper -->
+
+</div></div></div></div></div></div>
+
+
+
+
+<!-- Footer -->
+<footer class="page-footer bg-light border-top font-small">
+
+  <!-- Copyright -->
+  <div class="footer-copyright text-center py-3">© 2019 Copyright:
+    <a href="batstate-u.edu.ph"> Batangas State University</a>
+  </div>
+  <!-- Copyright -->
+
+</footer>
+<!-- Footer -->
+
+
+
+
+  
+  <!-- Bootstrap core JavaScript -->
+  <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
+  <!-- Menu Toggle Script -->
+
+  <script>
+    $("#menu-toggle").click(function(e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+    });
+  </script>
+
+  
+          <script>
+document.getElementById('btn_search').onclick = function() {
+  if (document.getElementById('txt_search').value.trim() != '')
+  {
+    location.href = '/admin/search/' + document.getElementById('txt_search').value;
+  }
+};
+</script>
+
+ 
+
+  
+
+
+</body>
+
+</html>

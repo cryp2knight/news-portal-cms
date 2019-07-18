@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>News Portal</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="{{ url_for('static', filename='styles/simple-sidebar.css') }}" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="d-flex" id="wrapper">
+
+
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+
+      <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse fixed" id="navbarSupportedContent">
+          <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+            <li >
+              <a class="btn btn-info" class="nav-link" href="#Users">Users</a>
+            </li>
+            <li >
+              <a class="btn btn-primary" class="nav-link" href="#sections">Sections</a>
+            </li>
+            <li>
+              <a class="btn btn-danger" href="/modify/database/logout">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+      <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <!-- <strong>Title</strong> --> {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+     <div class="container-fluid">
+
+            <div class="container">
+
+      <div class="row">
+
+      <!-- Blog Entries Column -->
+      <div class="col-md-12" id="User">
+        <h1>Users</h1><a href="#addModal" data-toggle="modal" class="btn btn-primary">Add User</a>
+        <!-- Modal HTML -->
+                <div id="addModal" class="modal fade">
+                  <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                           
+                        <h4 class="modal-title">Add User</h4>  
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                      </div>
+                      <div class="modal-body">
+                        <FORM method="post" action="/modify/database/user/add">
+                        Username:
+                        <input type="text" class="form-control" name="Username">
+                        Name:
+                        <input type="text" class="form-control" name="name">
+                        Password:
+                        <input type="text"  class="form-control" name="password">
+                        Position:
+                        <select class="form-control" name="position"><option>Writer</option><option>Editor</option></select>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                        <input type="submit" class="btn btn-primary" value="Add">
+                      </FORM>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+  <hr>
+                <form method="POST" action="/modify/database/user/search">
+                  <input type="text" name="search" placeholder="search" class="form-control">
+                </form>     <br>
+      
+        <table class="table">
+          <tr>
+            <th>User Id</th>
+            <th>Username</th>
+            <th>Password</th>
+            <th>Name</th>
+            <th>Position</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+          {% for i in data %}
+          <tr>
+            <td>{{i[0]}}</td>
+            <td>{{i[1]}}</td>
+            <td>{{i[2]}}</td>
+            <td>{{i[3]}}</td>
+            <td>{{i[4]}}</td>
+            {% if i[5] == "Enabled" %}
+            <td>🔵</td>
+            {% else %}
+            <td>🔴</td>
+            {% endif %}
+            <td><a href="#id{{i[0]}}" class="btn btn-info" data-toggle="modal">Edit</a>
+              {% if i[5] == "Enabled" %}<a href="/modify/database/user/{{i[0]}}/Disabled" class="btn btn-danger">Disable</a>
+              {%else%}<a href="/modify/database/user/{{i[0]}}/Enabled" class="btn btn-success">Enable</a>{%endif%}</td>
+                             <!-- Modal HTML -->
+                <div id="id{{i[0]}}" class="modal fade">
+                  <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                           
+                        <h4 class="modal-title">Update User</h4>  
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                      </div>
+                      <div class="modal-body">
+                        <FORM method="post" action="/modify/database/user/update/{{i[0]}}">
+                        Username:
+                        <input type="text" value="{{i[1]}}" class="form-control" disabled=True>
+                        Name:
+                        <input type="text" value="{{i[3]}}" class="form-control" name="name">
+                        Password:
+                        <input type="text" value="{{i[2]}}" class="form-control" name="password">
+                        Position:
+                        <select class="form-control" name="position"><option {% if i[4] == "Writer"%}selected{% endif %}>Writer</option><option {% if i[4] == "Editor"%}selected{% endif %}>Editor</option></select>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                        <input type="submit" class="btn btn-primary" value="Update">
+                      </FORM>
+                      </div>
+                    </div>
+                  </div>
+                </div>     
+          </tr>
+          {% endfor %}
+        </table>
+
+      </div>
+
+      	
+     <div class="col-md-12" id="sections">
+       <h1>Sections</h1>
+      <a href="#addSection" data-toggle="modal" class="btn btn-primary">Add Sections</a><br>
+<hr>
+       <!-- Modal HTML -->
+                <div id="addSection" class="modal fade">
+                  <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                           
+                        <h4 class="modal-title">Add Section</h4>  
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                      </div>
+                      <div class="modal-body">
+                        <FORM method="post" action="/modify/database/section/add">
+                        Section:
+                        <input type="text" class="form-control" name="sectionname">
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                        <input type="submit" class="btn btn-primary" value="Add">
+                      </FORM>
+                      </div>
+                    </div>
+                  </div>
+                </div>  
+       <table class="table">
+          <tr>
+            <th>Section ID</th>
+            <th>Sections</th>
+            <th>Actions</th>
+          </tr>
+          {% for i in sections %}
+          <tr>
+            <td>{{i[0]}}</td>
+            <td>{{i[1]}}</td>
+            <td><a href="#section{{i[0]}}" class="btn btn-info" data-toggle="modal">Edit</a>
+              <a href="#sectiondelete{{i[0]}}" class="btn btn-danger" data-toggle="modal">Delete</a></td>
+          </tr>
+                       <!-- Modal HTML -->
+                <div id="section{{i[0]}}" class="modal fade">
+                  <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                           
+                        <h4 class="modal-title">Update Section</h4>  
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                      </div>
+                      <div class="modal-body">
+                        <FORM method="post" action="/modify/database/section/update/{{i[0]}}">
+                        Section:
+                        <input type="text" value="{{i[1]}}" class="form-control" name="sectionname">
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                        <input type="submit" class="btn btn-primary" value="Update">
+                      </FORM>
+                      </div>
+                    </div>
+                  </div>
+                </div>  
+                                       <!-- Modal HTML -->
+                <div id="sectiondelete{{i[0]}}" class="modal fade">
+                  <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                           
+                        <h4 class="modal-title">Delete Section</h4>  
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                      </div>
+                      <div class="modal-body">
+                        <FORM method="post" action="/modify/database/section/delete/{{i[0]}}">
+                        Delete this section?
+                        <input type="text" value="{{i[1]}}" class="form-control" name="sectionname" disabled="True">
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                        <input type="submit" class="btn btn-primary" value="Delete">
+                      </FORM>
+                      </div>
+                    </div>
+                  </div>
+                </div>        
+          {% endfor %}
+        </table>
+     </div>
+     
+</div>
+</div>
+</div>
+      </div>
+
+
+  </div></div>
+  <br>
+  <br>
+  <br>
+
+
+
+
+
+<!-- Footer -->
+<footer class="page-footer bg-light border-top font-small">
+
+  <!-- Copyright -->
+  <div class="footer-copyright text-center py-3">© 2019 Copyright:
+    <a href="batstate-u.edu.ph"> Batangas State University</a>
+  </div>
+  <!-- Copyright -->
+
+</footer>
+<!-- Footer -->
+
+
+  
+  <!-- Bootstrap core JavaScript -->
+  <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
+
+  <!-- Menu Toggle Script -->
+
+  <script>
+    $("#menu-toggle").click(function(e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+    });
+  </script>
+
+  
+ 
+
+  
+
+
+</body>
+
+</html>
